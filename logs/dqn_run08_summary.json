@@ -1,0 +1,15 @@
+{
+  "algo": "dqn",
+  "run_id": "dqn_run08",
+  "mean_reward": 0.6575915900144023,
+  "std_reward": 1.207745234925385,
+  "hyperparams": {
+    "learning_rate": 0.0001,
+    "buffer_size": 10000,
+    "batch_size": 64,
+    "gamma": 0.99,
+    "exploration_fraction": 0.2,
+    "exploration_initial_eps": 1.0,
+    "exploration_final_eps": 0.05
+  }
+}

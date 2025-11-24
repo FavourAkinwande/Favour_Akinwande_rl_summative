@@ -1,0 +1,12 @@
+{
+  "algo": "a2c",
+  "run_id": "a2c_run04",
+  "mean_reward": 1.4301880964954392,
+  "std_reward": 1.178742895430765,
+  "hyperparams": {
+    "learning_rate": 0.0001,
+    "n_steps": 5,
+    "gamma": 0.99,
+    "ent_coef": 0.01
+  }
+}

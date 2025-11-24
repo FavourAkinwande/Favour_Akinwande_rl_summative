@@ -1,0 +1,13 @@
+{
+  "algo": "ppo",
+  "run_id": "ppo_run08",
+  "mean_reward": 1.7177507227817745,
+  "std_reward": 1.0893367413530168,
+  "hyperparams": {
+    "learning_rate": 0.0001,
+    "n_steps": 128,
+    "batch_size": 64,
+    "gamma": 0.99,
+    "n_epochs": 10
+  }
+}

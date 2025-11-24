@@ -1,0 +1,12 @@
+{
+  "algo": "reinforce",
+  "run_id": "reinforce_run01",
+  "mean_reward": 0.696715351951404,
+  "std_reward": 1.1869866041606485,
+  "hyperparams": {
+    "lr": 0.0001,
+    "gamma": 0.95,
+    "hidden_dim": 64,
+    "batch_size": 5
+  }
+}

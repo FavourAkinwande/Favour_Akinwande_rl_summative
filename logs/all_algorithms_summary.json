@@ -1,0 +1,586 @@
+{
+  "all_runs": {
+    "dqn": [
+      {
+        "algo": "dqn",
+        "run_id": "dqn_run01",
+        "mean_reward": 0.6475039927988477,
+        "std_reward": 1.1705852703043227,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "buffer_size": 10000,
+          "batch_size": 32,
+          "gamma": 0.95,
+          "exploration_fraction": 0.1,
+          "exploration_initial_eps": 1.0,
+          "exploration_final_eps": 0.05
+        }
+      },
+      {
+        "algo": "dqn",
+        "run_id": "dqn_run02",
+        "mean_reward": 0.675993974555929,
+        "std_reward": 1.1705905045758018,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "buffer_size": 10000,
+          "batch_size": 32,
+          "gamma": 0.95,
+          "exploration_fraction": 0.2,
+          "exploration_initial_eps": 1.0,
+          "exploration_final_eps": 0.05
+        }
+      },
+      {
+        "algo": "dqn",
+        "run_id": "dqn_run03",
+        "mean_reward": 0.6587903576572252,
+        "std_reward": 1.1709975153201266,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "buffer_size": 10000,
+          "batch_size": 32,
+          "gamma": 0.99,
+          "exploration_fraction": 0.1,
+          "exploration_initial_eps": 1.0,
+          "exploration_final_eps": 0.05
+        }
+      },
+      {
+        "algo": "dqn",
+        "run_id": "dqn_run04",
+        "mean_reward": 0.7093479812770044,
+        "std_reward": 1.162827811540475,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "buffer_size": 10000,
+          "batch_size": 32,
+          "gamma": 0.99,
+          "exploration_fraction": 0.2,
+          "exploration_initial_eps": 1.0,
+          "exploration_final_eps": 0.05
+        }
+      },
+      {
+        "algo": "dqn",
+        "run_id": "dqn_run05",
+        "mean_reward": 0.6458347844455113,
+        "std_reward": 1.1679377943813003,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "buffer_size": 10000,
+          "batch_size": 64,
+          "gamma": 0.95,
+          "exploration_fraction": 0.1,
+          "exploration_initial_eps": 1.0,
+          "exploration_final_eps": 0.05
+        }
+      },
+      {
+        "algo": "dqn",
+        "run_id": "dqn_run06",
+        "mean_reward": 0.6672648852616418,
+        "std_reward": 1.1664479365631,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "buffer_size": 10000,
+          "batch_size": 64,
+          "gamma": 0.95,
+          "exploration_fraction": 0.2,
+          "exploration_initial_eps": 1.0,
+          "exploration_final_eps": 0.05
+        }
+      },
+      {
+        "algo": "dqn",
+        "run_id": "dqn_run07",
+        "mean_reward": 0.6601321949111858,
+        "std_reward": 1.1701917411345057,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "buffer_size": 10000,
+          "batch_size": 64,
+          "gamma": 0.99,
+          "exploration_fraction": 0.1,
+          "exploration_initial_eps": 1.0,
+          "exploration_final_eps": 0.05
+        }
+      },
+      {
+        "algo": "dqn",
+        "run_id": "dqn_run08",
+        "mean_reward": 0.6575915900144023,
+        "std_reward": 1.207745234925385,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "buffer_size": 10000,
+          "batch_size": 64,
+          "gamma": 0.99,
+          "exploration_fraction": 0.2,
+          "exploration_initial_eps": 1.0,
+          "exploration_final_eps": 0.05
+        }
+      },
+      {
+        "algo": "dqn",
+        "run_id": "dqn_run09",
+        "mean_reward": 0.6830944152664427,
+        "std_reward": 1.1762152041932812,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "buffer_size": 10000,
+          "batch_size": 128,
+          "gamma": 0.95,
+          "exploration_fraction": 0.1,
+          "exploration_initial_eps": 1.0,
+          "exploration_final_eps": 0.05
+        }
+      },
+      {
+        "algo": "dqn",
+        "run_id": "dqn_run10",
+        "mean_reward": 0.6021516269803169,
+        "std_reward": 1.2027075412783161,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "buffer_size": 10000,
+          "batch_size": 128,
+          "gamma": 0.95,
+          "exploration_fraction": 0.2,
+          "exploration_initial_eps": 1.0,
+          "exploration_final_eps": 0.05
+        }
+      }
+    ],
+    "ppo": [
+      {
+        "algo": "ppo",
+        "run_id": "ppo_run01",
+        "mean_reward": 1.709499964028777,
+        "std_reward": 1.1405381732173698,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "n_steps": 128,
+          "batch_size": 32,
+          "gamma": 0.95,
+          "n_epochs": 4
+        }
+      },
+      {
+        "algo": "ppo",
+        "run_id": "ppo_run02",
+        "mean_reward": 2.0663820446043166,
+        "std_reward": 1.0142569700308868,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "n_steps": 128,
+          "batch_size": 32,
+          "gamma": 0.95,
+          "n_epochs": 10
+        }
+      },
+      {
+        "algo": "ppo",
+        "run_id": "ppo_run03",
+        "mean_reward": 1.7023360733812951,
+        "std_reward": 1.1264278494994893,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "n_steps": 128,
+          "batch_size": 32,
+          "gamma": 0.99,
+          "n_epochs": 4
+        }
+      },
+      {
+        "algo": "ppo",
+        "run_id": "ppo_run04",
+        "mean_reward": 2.0888608187050357,
+        "std_reward": 0.9995852151298602,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "n_steps": 128,
+          "batch_size": 32,
+          "gamma": 0.99,
+          "n_epochs": 10
+        }
+      },
+      {
+        "algo": "ppo",
+        "run_id": "ppo_run05",
+        "mean_reward": 1.6540583597122305,
+        "std_reward": 1.1312695125354648,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "n_steps": 128,
+          "batch_size": 64,
+          "gamma": 0.95,
+          "n_epochs": 4
+        }
+      },
+      {
+        "algo": "ppo",
+        "run_id": "ppo_run06",
+        "mean_reward": 1.9776044959232617,
+        "std_reward": 1.0098493284399692,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "n_steps": 128,
+          "batch_size": 64,
+          "gamma": 0.95,
+          "n_epochs": 10
+        }
+      },
+      {
+        "algo": "ppo",
+        "run_id": "ppo_run07",
+        "mean_reward": 1.4826485760191845,
+        "std_reward": 1.1774766901301925,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "n_steps": 128,
+          "batch_size": 64,
+          "gamma": 0.99,
+          "n_epochs": 4
+        }
+      },
+      {
+        "algo": "ppo",
+        "run_id": "ppo_run08",
+        "mean_reward": 1.7177507227817745,
+        "std_reward": 1.0893367413530168,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "n_steps": 128,
+          "batch_size": 64,
+          "gamma": 0.99,
+          "n_epochs": 10
+        }
+      },
+      {
+        "algo": "ppo",
+        "run_id": "ppo_run09",
+        "mean_reward": 1.247206428297362,
+        "std_reward": 1.2037718179057904,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "n_steps": 128,
+          "batch_size": 128,
+          "gamma": 0.95,
+          "n_epochs": 4
+        }
+      },
+      {
+        "algo": "ppo",
+        "run_id": "ppo_run10",
+        "mean_reward": 1.7893135155875302,
+        "std_reward": 1.1693025055220585,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "n_steps": 128,
+          "batch_size": 128,
+          "gamma": 0.95,
+          "n_epochs": 10
+        }
+      }
+    ],
+    "a2c": [
+      {
+        "algo": "a2c",
+        "run_id": "a2c_run01",
+        "mean_reward": 1.6742845592894864,
+        "std_reward": 1.0816107438307425,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "n_steps": 5,
+          "gamma": 0.95,
+          "ent_coef": 0.0
+        }
+      },
+      {
+        "algo": "a2c",
+        "run_id": "a2c_run02",
+        "mean_reward": 1.4872568449351897,
+        "std_reward": 1.1187081784390847,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "n_steps": 5,
+          "gamma": 0.95,
+          "ent_coef": 0.01
+        }
+      },
+      {
+        "algo": "a2c",
+        "run_id": "a2c_run03",
+        "mean_reward": 1.5019366812289967,
+        "std_reward": 1.157826325731308,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "n_steps": 5,
+          "gamma": 0.99,
+          "ent_coef": 0.0
+        }
+      },
+      {
+        "algo": "a2c",
+        "run_id": "a2c_run04",
+        "mean_reward": 1.4301880964954392,
+        "std_reward": 1.178742895430765,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "n_steps": 5,
+          "gamma": 0.99,
+          "ent_coef": 0.01
+        }
+      },
+      {
+        "algo": "a2c",
+        "run_id": "a2c_run05",
+        "mean_reward": 1.3358176216994717,
+        "std_reward": 1.1685848493926116,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "n_steps": 10,
+          "gamma": 0.95,
+          "ent_coef": 0.0
+        }
+      },
+      {
+        "algo": "a2c",
+        "run_id": "a2c_run06",
+        "mean_reward": 1.1508169625540086,
+        "std_reward": 1.1754129297837383,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "n_steps": 10,
+          "gamma": 0.95,
+          "ent_coef": 0.01
+        }
+      },
+      {
+        "algo": "a2c",
+        "run_id": "a2c_run07",
+        "mean_reward": 1.2655365972155546,
+        "std_reward": 1.1673012078033704,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "n_steps": 10,
+          "gamma": 0.99,
+          "ent_coef": 0.0
+        }
+      },
+      {
+        "algo": "a2c",
+        "run_id": "a2c_run08",
+        "mean_reward": 1.122102618819011,
+        "std_reward": 1.1681527816538335,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "n_steps": 10,
+          "gamma": 0.99,
+          "ent_coef": 0.01
+        }
+      },
+      {
+        "algo": "a2c",
+        "run_id": "a2c_run09",
+        "mean_reward": 1.0098310854536727,
+        "std_reward": 1.1725946624627073,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "n_steps": 20,
+          "gamma": 0.95,
+          "ent_coef": 0.0
+        }
+      },
+      {
+        "algo": "a2c",
+        "run_id": "a2c_run10",
+        "mean_reward": 0.8770058223715794,
+        "std_reward": 1.1874772127902085,
+        "hyperparams": {
+          "learning_rate": 0.0001,
+          "n_steps": 20,
+          "gamma": 0.95,
+          "ent_coef": 0.01
+        }
+      }
+    ],
+    "reinforce": [
+      {
+        "algo": "reinforce",
+        "run_id": "reinforce_run01",
+        "mean_reward": 0.696715351951404,
+        "std_reward": 1.1869866041606485,
+        "hyperparams": {
+          "lr": 0.0001,
+          "gamma": 0.95,
+          "hidden_dim": 64,
+          "batch_size": 5
+        }
+      },
+      {
+        "algo": "reinforce",
+        "run_id": "reinforce_run02",
+        "mean_reward": 0.6358668481792222,
+        "std_reward": 1.2002291492933077,
+        "hyperparams": {
+          "lr": 0.0001,
+          "gamma": 0.95,
+          "hidden_dim": 64,
+          "batch_size": 10
+        }
+      },
+      {
+        "algo": "reinforce",
+        "run_id": "reinforce_run03",
+        "mean_reward": 0.6558138007733082,
+        "std_reward": 1.1821789225754742,
+        "hyperparams": {
+          "lr": 0.0001,
+          "gamma": 0.95,
+          "hidden_dim": 128,
+          "batch_size": 5
+        }
+      },
+      {
+        "algo": "reinforce",
+        "run_id": "reinforce_run04",
+        "mean_reward": 0.6322348820883082,
+        "std_reward": 1.1836156135031524,
+        "hyperparams": {
+          "lr": 0.0001,
+          "gamma": 0.95,
+          "hidden_dim": 128,
+          "batch_size": 10
+        }
+      },
+      {
+        "algo": "reinforce",
+        "run_id": "reinforce_run05",
+        "mean_reward": 0.680266244818144,
+        "std_reward": 1.1744284152942177,
+        "hyperparams": {
+          "lr": 0.0001,
+          "gamma": 0.95,
+          "hidden_dim": 256,
+          "batch_size": 5
+        }
+      },
+      {
+        "algo": "reinforce",
+        "run_id": "reinforce_run06",
+        "mean_reward": 0.6492159355944768,
+        "std_reward": 1.1370597092622485,
+        "hyperparams": {
+          "lr": 0.0001,
+          "gamma": 0.95,
+          "hidden_dim": 256,
+          "batch_size": 10
+        }
+      },
+      {
+        "algo": "reinforce",
+        "run_id": "reinforce_run07",
+        "mean_reward": 0.7186787299057168,
+        "std_reward": 1.1487650887776437,
+        "hyperparams": {
+          "lr": 0.0001,
+          "gamma": 0.99,
+          "hidden_dim": 64,
+          "batch_size": 5
+        }
+      },
+      {
+        "algo": "reinforce",
+        "run_id": "reinforce_run08",
+        "mean_reward": 0.6834732879528019,
+        "std_reward": 1.1755513558693909,
+        "hyperparams": {
+          "lr": 0.0001,
+          "gamma": 0.99,
+          "hidden_dim": 64,
+          "batch_size": 10
+        }
+      },
+      {
+        "algo": "reinforce",
+        "run_id": "reinforce_run09",
+        "mean_reward": 0.6278395535185489,
+        "std_reward": 1.1790548235056306,
+        "hyperparams": {
+          "lr": 0.0001,
+          "gamma": 0.99,
+          "hidden_dim": 128,
+          "batch_size": 5
+        }
+      },
+      {
+        "algo": "reinforce",
+        "run_id": "reinforce_run10",
+        "mean_reward": 0.6645750548590882,
+        "std_reward": 1.1840615270210564,
+        "hyperparams": {
+          "lr": 0.0001,
+          "gamma": 0.99,
+          "hidden_dim": 128,
+          "batch_size": 10
+        }
+      }
+    ]
+  },
+  "best_per_algorithm": {
+    "dqn": {
+      "algo": "dqn",
+      "run_id": "dqn_run04",
+      "mean_reward": 0.7093479812770044,
+      "std_reward": 1.162827811540475,
+      "hyperparams": {
+        "learning_rate": 0.0001,
+        "buffer_size": 10000,
+        "batch_size": 32,
+        "gamma": 0.99,
+        "exploration_fraction": 0.2,
+        "exploration_initial_eps": 1.0,
+        "exploration_final_eps": 0.05
+      }
+    },
+    "ppo": {
+      "algo": "ppo",
+      "run_id": "ppo_run04",
+      "mean_reward": 2.0888608187050357,
+      "std_reward": 0.9995852151298602,
+      "hyperparams": {
+        "learning_rate": 0.0001,
+        "n_steps": 128,
+        "batch_size": 32,
+        "gamma": 0.99,
+        "n_epochs": 10
+      }
+    },
+    "a2c": {
+      "algo": "a2c",
+      "run_id": "a2c_run01",
+      "mean_reward": 1.6742845592894864,
+      "std_reward": 1.0816107438307425,
+      "hyperparams": {
+        "learning_rate": 0.0001,
+        "n_steps": 5,
+        "gamma": 0.95,
+        "ent_coef": 0.0
+      }
+    },
+    "reinforce": {
+      "algo": "reinforce",
+      "run_id": "reinforce_run07",
+      "mean_reward": 0.7186787299057168,
+      "std_reward": 1.1487650887776437,
+      "hyperparams": {
+        "lr": 0.0001,
+        "gamma": 0.99,
+        "hidden_dim": 64,
+        "batch_size": 5
+      }
+    }
+  }
+}
