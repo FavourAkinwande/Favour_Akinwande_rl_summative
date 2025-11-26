@@ -16,7 +16,7 @@ import numpy as np
 import pygame
 from gymnasium import Env, spaces
 
-from visualization.opengl_scene import OpenGLFoodScene
+from visualization_scripts.opengl_scene import OpenGLFoodScene
 
 
 @dataclass

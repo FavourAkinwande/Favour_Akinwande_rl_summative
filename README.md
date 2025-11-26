@@ -15,28 +15,98 @@ The environment features a discrete action space (9 routes: 3 retailers × 3 com
 ## Environment Details
 
 ### Observation Space
-- **10 normalized features**: `[time, supplies(3), freshness(3), demands(3)]`
-- Time: normalized step (0-1) within the 24-step day
-- Supplies/Demands: normalized by max values
-- Freshness: decay factor (0-1)
+
+The environment provides a **10-dimensional normalized observation vector** that captures the current state of the food redistribution system:
+
+- **Time feature (1 dim)**: Normalized time step within the 24-step day, ranging from 0.0 (start) to 1.0 (end). This helps the agent understand temporal constraints and plan accordingly.
+
+- **Supply features (3 dims)**: Current food supply at each of the 3 retailers, normalized by `max_supply` (120.0 units). Values range from 0.0 to 1.0, indicating the proportion of maximum capacity remaining at each retailer.
+
+- **Freshness features (3 dims)**: Food freshness level at each retailer, ranging from 0.0 (spoiled) to 1.0 (fresh). Freshness decays over time and affects the freshness bonus in the reward function.
+
+- **Demand features (3 dims)**: Current food demand at each of the 3 communities, normalized by `max_demand` (100.0 units). Values range from 0.0 to 1.0, representing the proportion of maximum demand remaining at each community.
+
+**Observation vector structure**: `[time, supply_R1, supply_R2, supply_R3, freshness_R1, freshness_R2, freshness_R3, demand_C1, demand_C2, demand_C3]`
 
 ### Action Space
-- **9 discrete actions**: Each represents a route from retailer (R1-R3) to community (C1-C3)
-- Action encoding: `action = retailer_idx * num_communities + community_idx`
+
+The environment uses a **discrete action space with 9 possible actions**, where each action represents a delivery route from a retailer to a community:
+
+- **Action encoding**: `action = retailer_idx * num_communities + community_idx`
+  - Example: Action 0 = R1→C1, Action 1 = R1→C2, Action 2 = R1→C3
+  - Example: Action 3 = R2→C1, Action 4 = R2→C2, Action 5 = R2→C3
+  - Example: Action 6 = R3→C1, Action 7 = R3→C2, Action 8 = R3→C3
+
+- **Delivery mechanics**: When an action is taken, the agent attempts to deliver food from the selected retailer to the selected community. The actual amount delivered is constrained by:
+  - Truck capacity: 40.0 units per trip
+  - Available supply at the retailer
+  - Remaining demand at the community
+  - Formula: `deliverable = min(truck_capacity, supply, demand)`
+
+### Environment Dynamics
+
+The environment simulates realistic food redistribution dynamics:
+
+- **Supply decay**: After each step, all retailer supplies decrease by 4.0 units (representing spoilage and other losses), encouraging timely deliveries.
+
+- **Freshness decay**: Food freshness decreases by 0.04 per step at all retailers, incentivizing the agent to prioritize fresher food for deliveries.
+
+- **Demand fluctuation**: Community demands fluctuate each step with Gaussian noise (σ=5.0), simulating real-world demand variability. Demands are clipped to remain non-negative and within maximum bounds.
+
+- **Episode structure**: Each episode consists of exactly 24 steps, representing a full day of operations. The episode terminates after 24 steps, regardless of remaining supply or demand.
 
 ### Reward Function
 
+The reward function is designed to encourage efficient, fair, and timely food redistribution while penalizing wasteful or inefficient behavior:
+
 **Positive Components:**
-- **Delivery Reward**: `deliverable / truck_capacity` (up to +1.0)
-- **Freshness Bonus**: `delivery_reward * freshness * 0.5` (up to +0.5)
+
+- **Delivery Reward**: `deliverable / truck_capacity` (up to +1.0 per step)
+  - Rewards successful deliveries proportional to the amount delivered relative to truck capacity
+  - Maximum reward occurs when delivering a full truck load (40.0 units)
+
+- **Freshness Bonus**: `delivery_reward * freshness * 0.5` (up to +0.5 per step)
+  - Additional reward for delivering fresh food, scaled by the freshness level at the source retailer
+  - Encourages prioritizing fresher food to maximize both delivery quantity and quality
 
 **Penalties:**
-- **Waste Penalty**: `0.02 * (remaining_supply / max_supply)`
-- **Fairness Penalty**: `0.2 * std(delivered_ratios)` - encourages equitable distribution
-- **Transport Penalty**: `0.1 * (distance / max_distance)` - discourages long routes
-- **Idle Penalty**: `0.1` if no delivery occurs
 
-**Final Reward**: `delivery_reward + freshness_reward - waste_penalty - fairness_penalty - transport_penalty - idle_penalty`
+- **Waste Penalty**: `0.02 * (remaining_supply / max_supply)`
+  - Penalizes unused food remaining at retailers, calculated as the proportion of total maximum supply that goes unused
+  - Encourages the agent to minimize food waste by delivering as much as possible
+
+- **Fairness Penalty**: `0.2 * std(delivered_ratios)`
+  - Penalizes unequal distribution across communities by measuring the standard deviation of delivery ratios
+  - Delivery ratio = `delivered_to_community / initial_demand_of_community`
+  - Encourages equitable distribution, ensuring all communities receive proportional deliveries relative to their initial needs
+
+- **Transport Penalty**: `0.1 * (distance / max_distance)`
+  - Penalizes long-distance deliveries, scaled by the route distance relative to the maximum distance in the network
+  - Encourages efficient routing by prioritizing shorter routes when possible
+  - Distance matrix: R1→C1=3.0, R1→C2=6.0, R1→C3=9.0, R2→C1=4.0, R2→C2=2.0, R2→C3=7.0, R3→C1=5.0, R3→C2=6.5, R3→C3=3.0
+
+- **Idle Penalty**: `0.1` (fixed penalty per step)
+  - Applied when no delivery occurs (e.g., attempting to deliver from an empty retailer or to a community with no demand)
+  - Discourages unproductive actions and encourages the agent to make valid deliveries
+
+**Final Reward Formula**: 
+```
+reward = delivery_reward + freshness_reward - waste_penalty - fairness_penalty - transport_penalty - idle_penalty
+```
+
+**Reward Range**: The reward can range from approximately -0.5 (worst case: idle action with high waste) to +1.5 (best case: full truck load of fresh food with minimal penalties). Typical successful episodes achieve cumulative rewards between +1.0 and +4.0.
+
+### Optimization Objectives
+
+The agent must balance multiple competing objectives:
+
+1. **Maximize total deliveries**: Deliver as much food as possible (minimize waste and unmet demand)
+2. **Maintain fairness**: Ensure equitable distribution across all communities
+3. **Prioritize freshness**: Deliver fresher food when possible to maximize freshness bonuses
+4. **Optimize routing**: Minimize transport costs by choosing efficient routes
+5. **Time management**: Make productive deliveries within the 24-step constraint
+
+The optimal strategy requires the agent to learn when to prioritize efficiency (high-volume deliveries) versus fairness (balanced distribution), while considering freshness decay and transport costs.
 
 ## Training
 

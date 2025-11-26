@@ -8,11 +8,11 @@ from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv
 
 from environment.food_env import FoodRedistributionEnv
-from visualization.food_dashboard import FoodDashboard
+from visualization_scripts.food_dashboard import FoodDashboard
 
 
-MODEL_PATH = Path("models") / "best models" / "overallbest_ppo"
-N_EPISODES = 40
+MODEL_PATH = Path("trained_models") / "best models" / "overallbest_ppo.zip"
+N_EPISODES = 100
 STEP_DELAY = 0.15
 
 
