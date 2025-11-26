@@ -72,19 +72,19 @@ Saves the final model to `trained_models/best models/overallbest_ppo.zip`
 
 ## Results Summary
 
-Based on comprehensive evaluation:
+Based on 50k timestep training sweeps:
 
-| Algorithm | Mean Reward | Std Reward | Success Rate | Best Model |
-|-----------|-------------|------------|--------------|------------|
-| **PPO** | 2.24 | 0.73 | 100% | `overallbest_ppo.zip` |
-| **A2C** | 2.30 | 0.74 | 100% | `a2c_run01.zip` |
-| **REINFORCE** | 0.59 | 1.11 | 70% | `reinforce_run07_policy.pt` |
-| **DQN** | -2.63 | 0.38 | 0% | `dqn_run04.zip` |
+| Algorithm | Mean Reward | Std Reward | Best Model |
+|-----------|-------------|------------|------------|
+| **PPO** | 2.09 | 1.00 | `ppo_run04.zip` |
+| **A2C** | 1.67 | 1.08 | `a2c_run01.zip` |
+| **REINFORCE** | 0.72 | 1.15 | `reinforce_run07_policy.pt` |
+| **DQN** | 0.71 | 1.16 | `dqn_run04.zip` |
 
 **Key Findings:**
-- **PPO** achieved the highest mean reward (2.09) during 50k timestep training sweeps
-- **PPO** was selected for extended training (500k timesteps) due to superior performance
-- **A2C** showed competitive results but with 10× less training
+- **PPO** achieved the highest mean reward during the initial 50k timestep training sweeps and was selected for extended training (500k timesteps) due to its superior performance
+- **A2C** achieved the highest mean reward (2.30) in the final evaluation, demonstrating strong performance with only 50k timesteps of training
+- **A2C** showed competitive results with significantly less training, indicating efficient learning
 - **DQN** struggled, likely requiring more extensive hyperparameter tuning or longer training
 - **REINFORCE** served as an effective baseline, demonstrating the value of variance reduction techniques
 
