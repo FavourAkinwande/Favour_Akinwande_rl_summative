@@ -12,32 +12,6 @@ This project implements and compares four reinforcement learning algorithms:
 
 The environment features a discrete action space (9 routes: 3 retailers × 3 communities), complex reward signals, and dynamic supply/demand dynamics.
 
-## Setup
-
-### Prerequisites
-
-- Python 3.10+
-- pip
-
-### Installation
-
-```bash
-# Create virtual environment
-python -m venv .venv
-
-# Activate virtual environment
-# Windows:
-.venv\Scripts\activate
-# Linux/Mac:
-source .venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Additional dependencies for visualization
-pip install moderngl Pillow
-```
-
 ## Training
 
 ### Hyperparameter Sweeps (All Algorithms)
@@ -209,6 +183,32 @@ Based on comprehensive evaluation:
 - Training logs include Monitor CSVs (SB3) and returns/entropy CSVs (REINFORCE)
 - Evaluation results are saved in `model_evaluation/evaluation_results.csv`
 - Comprehensive summaries available in `logs/all_algorithms_summary.json`
+
+## Setup
+
+### Prerequisites
+
+- Python 3.10+
+- pip
+
+### Installation
+
+```bash
+# Create virtual environment
+python -m venv .venv
+
+# Activate virtual environment
+# Windows:
+.venv\Scripts\activate
+# Linux/Mac:
+source .venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Additional dependencies for visualization
+pip install moderngl Pillow
+```
 
 ## Project Structure
 
