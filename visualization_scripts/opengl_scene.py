@@ -178,6 +178,10 @@ class OpenGLFoodScene:
         self.animation = RouteAnimation()
         self._truck_pos = np.array([-20, 0, 4], dtype=np.float32)
 
+        # Episode-level stats for HUD
+        self.initial_supply: float = 0.0
+        self.total_delivered: float = 0.0
+
     # ------------------------- public API ---------------------------------
     def update_state(self, env) -> None:
         """Pull state from the Gym environment."""
@@ -187,6 +191,13 @@ class OpenGLFoodScene:
         self.last_action = getattr(env, "last_action", None)
         self.max_supply = max(1.0, float(env.config.max_supply))
         self.max_demand = max(1.0, float(env.config.max_demand))
+
+        time_step = getattr(env, "time_step", 0)
+        if time_step == 0:
+            self.initial_supply = float(np.sum(self.supplies))
+
+        delivered_totals = getattr(env, "delivered_totals", [])
+        self.total_delivered = float(np.sum(delivered_totals)) if len(delivered_totals) > 0 else 0.0
 
         base_y = [-10.0, 0.0, 10.0]
         left_x, right_x = -18.0, 18.0
@@ -351,6 +362,31 @@ class OpenGLFoodScene:
                 box = [screen[0] - 30, screen[1] - 14, screen[0] + 30, screen[1] + 10]
                 draw.rounded_rectangle(box, radius=6, fill=(255, 210, 120, 220))
                 draw.text((box[0] + 8, box[1] + 2), label, font=self.font, fill=(40, 40, 40))
+
+        # Global HUD card with episode stats
+        hud_margin_x = 20
+        hud_margin_y = 20
+        hud_width = 260
+        hud_height = 70
+        hud_box = [
+            hud_margin_x,
+            hud_margin_y,
+            hud_margin_x + hud_width,
+            hud_margin_y + hud_height,
+        ]
+        draw.rounded_rectangle(
+            hud_box,
+            radius=10,
+            fill=(255, 255, 255, 230),
+            outline=(180, 200, 190, 255),
+            width=1,
+        )
+        line1 = f"Initial supply: {self.initial_supply:.1f} units"
+        line2 = f"Total delivered: {self.total_delivered:.1f} units"
+        text_x = hud_box[0] + 12
+        text_y = hud_box[1] + 10
+        draw.text((text_x, text_y), line1, font=self.font, fill=(30, 60, 60))
+        draw.text((text_x, text_y + 24), line2, font=self.font, fill=(30, 60, 60))
         return np.array(image, dtype=np.uint8)
 
     # ------------------------- geometry creation ------------------------------
