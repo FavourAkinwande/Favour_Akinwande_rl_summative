@@ -16,6 +16,8 @@ import numpy as np
 import pygame
 from gymnasium import Env, spaces
 
+from visualization.opengl_scene import OpenGLFoodScene
+
 
 @dataclass
 class FoodEnvConfig:
@@ -48,7 +50,11 @@ class FoodRedistributionEnv(Env):
 
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
 
-    def __init__(self, config: Optional[FoodEnvConfig] = None, render_mode: Optional[str] = None):
+    def __init__(
+        self,
+        config: Optional[FoodEnvConfig] = None,
+        render_mode: Optional[str] = "rgb_array",
+    ):
         super().__init__()
         self.config = config or FoodEnvConfig()
         self.render_mode = render_mode
@@ -84,10 +90,20 @@ class FoodRedistributionEnv(Env):
         # Rendering state
         self._window: Optional[pygame.Surface] = None
         self._clock: Optional[pygame.time.Clock] = None
-        self._canvas: Optional[pygame.Surface] = None
+        self._canvas: Optional[pygame.Surface] = None  # legacy human mode surface
         self.window_size = (900, 600)
         self.retailer_positions = [(120, 120), (120, 300), (120, 480)]
         self.community_positions = [(780, 120), (780, 300), (780, 480)]
+
+        # Track last action/reward/info for rendering
+        self.last_action: Optional[int] = None
+        self.last_reward: float = 0.0
+        self.last_info: Dict[str, Any] = {}
+
+        # ModernGL scene (lazy-init to avoid requiring moderngl during training)
+        self.gl_scene: Optional[OpenGLFoodScene] = None
+        if self.render_mode == "rgb_array":
+            self.gl_scene = OpenGLFoodScene(width=900, height=600)
 
     # Gym API -----------------------------------------------------------------
     def reset(
@@ -103,6 +119,14 @@ class FoodRedistributionEnv(Env):
         self.demands = self._rng.uniform(0.4, 0.85, size=self.num_communities) * self.config.max_demand
         self.initial_demands = self.demands.copy()
         self.delivered_totals = np.zeros(self.num_communities, dtype=float)
+        
+        # Reset last action/reward/info
+        self.last_action = None
+        self.last_reward = 0.0
+        self.last_info = {}
+
+        if self.gl_scene is not None:
+            self.gl_scene.update_state(self)
 
         observation = self._get_observation()
         info = self._info()
@@ -144,42 +168,24 @@ class FoodRedistributionEnv(Env):
 
         observation = self._get_observation()
         info = self._info(delivered=deliverable, retailer=retailer_idx, community=community_idx)
+        
+        # Store last action, reward, and info for rendering
+        self.last_action = action
+        self.last_reward = float(reward)
+        self.last_info = info
 
-        if self.render_mode == "human":
-            self.render()
+        if self.gl_scene is not None:
+            self.gl_scene.update_state(self)
 
         return observation, float(reward), terminated, truncated, info
 
-    def render(self) -> Optional[np.ndarray]:
-        if self.render_mode not in self.metadata["render_modes"]:
-            raise ValueError(f"Invalid render mode {self.render_mode}.")
-
-        if self._canvas is None:
-            pygame.init()
-            pygame.font.init()
-            if self.render_mode == "human" and self._window is None:
-                self._window = pygame.display.set_mode(self.window_size)
-                pygame.display.set_caption("Food Redistribution Environment")
-            self._canvas = pygame.Surface(self.window_size)
-            self._font = pygame.font.SysFont("arial", 18)
-            self._clock = pygame.time.Clock()
-
-        self._canvas.fill((25, 29, 35))
-        self._draw_nodes()
-        self._draw_status_panel()
-
-        if self.render_mode == "human":
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.close()
-            assert self._window is not None
-            self._window.blit(self._canvas, (0, 0))
-            pygame.display.flip()
-            self._clock.tick(self.metadata["render_fps"])
+    def render(self, mode: str = "rgb_array") -> Optional[np.ndarray]:
+        """Return the ModernGL frame for dashboard embedding."""
+        if mode != "rgb_array":
             return None
-
-        frame = pygame.surfarray.array3d(self._canvas)
-        return np.transpose(frame, (1, 0, 2))
+        if self.gl_scene is None:
+            return None
+        return self.gl_scene.render_frame()
 
     def close(self) -> None:
         if self._window is not None:
@@ -198,6 +204,12 @@ class FoodRedistributionEnv(Env):
         return np.concatenate([time_feature, supply_feature, freshness_feature, demand_feature]).astype(np.float32)
 
     def _info(self, delivered: float = 0.0, retailer: int = -1, community: int = -1) -> Dict[str, Any]:
+        waste = float(np.sum(self.supplies))
+        unmet_demand = float(np.sum(self.demands))
+        fairness = self._fairness_std()
+        total_initial_demand = float(np.sum(self.initial_demands))
+        delivered_ratio = float(np.sum(self.delivered_totals) / total_initial_demand) if total_initial_demand > 0 else 0.0
+        
         return {
             "time_step": self.time_step,
             "delivered": delivered,
@@ -206,7 +218,11 @@ class FoodRedistributionEnv(Env):
             "supplies": self.supplies.copy(),
             "demands": self.demands.copy(),
             "freshness": self.freshness.copy(),
-            "fairness_std": self._fairness_std(),
+            "fairness_std": fairness,
+            "waste": waste,
+            "unmet_demand": unmet_demand,
+            "fairness": fairness,
+            "delivered_ratio": delivered_ratio,
         }
 
     def _fairness_std(self) -> float:
@@ -226,6 +242,16 @@ class FoodRedistributionEnv(Env):
 
     def _draw_nodes(self) -> None:
         assert self._canvas is not None
+        
+        # Draw route line if last action was valid
+        if self.last_action is not None and 0 <= self.last_action < self.action_space.n:
+            retailer_idx, community_idx = divmod(self.last_action, self.num_communities)
+            if 0 <= retailer_idx < self.num_retailers and 0 <= community_idx < self.num_communities:
+                r_pos = self.retailer_positions[retailer_idx]
+                c_pos = self.community_positions[community_idx]
+                # Draw highlighted route line
+                pygame.draw.line(self._canvas, (255, 255, 0), r_pos, c_pos, width=4)
+        
         for idx, (x, y) in enumerate(self.retailer_positions[: self.num_retailers]):
             supply = self.supplies[idx]
             freshness = self.freshness[idx]
@@ -253,14 +279,46 @@ class FoodRedistributionEnv(Env):
 
         lines = [
             f"Time step: {self.time_step}/{self.day_length}",
+            "",
+        ]
+        
+        # Add last action and reward if available
+        if self.last_action is not None:
+            retailer_idx, community_idx = divmod(self.last_action, self.num_communities)
+            lines.append(f"Last action: R{retailer_idx+1}->C{community_idx+1}")
+            lines.append(f"Last reward: {self.last_reward:.3f}")
+            lines.append("")
+        
+        # Add metrics from last_info if available
+        if self.last_info:
+            lines.append(f"Waste: {self.last_info.get('waste', 0):.2f}")
+            lines.append(f"Unmet demand: {self.last_info.get('unmet_demand', 0):.2f}")
+            lines.append(f"Fairness: {self.last_info.get('fairness', 0):.3f}")
+            lines.append(f"Delivered ratio: {self.last_info.get('delivered_ratio', 0):.3f}")
+            lines.append("")
+        
+        # Add general stats
+        lines.extend([
             f"Total delivered: {np.sum(self.delivered_totals):.1f}",
-            f"Fairness std: {self._fairness_std():.3f}",
             f"Avg freshness: {np.mean(self.freshness):.2f}",
             f"Remaining supply: {np.sum(self.supplies):.1f}",
             f"Remaining demand: {np.sum(self.demands):.1f}",
-        ]
-        for idx, line in enumerate(lines):
-            text = self._font.render(line, True, (235, 235, 235))
-            self._canvas.blit(text, (panel_rect.x + 12, panel_rect.y + 15 + idx * 24))
+        ])
+        
+        y_offset = 15
+        for line in lines:
+            if line:  # Skip empty lines
+                text = self._font.render(line, True, (235, 235, 235))
+                self._canvas.blit(text, (panel_rect.x + 12, panel_rect.y + y_offset))
+            y_offset += 24
+
+    # ModernGL helpers --------------------------------------------------------
+    def handle_camera_zoom(self, delta: float) -> None:
+        if self.gl_scene:
+            self.gl_scene.adjust_zoom(delta)
+
+    def handle_camera_orbit(self, dx: float, dy: float) -> None:
+        if self.gl_scene:
+            self.gl_scene.adjust_orbit(dx, dy)
 
 

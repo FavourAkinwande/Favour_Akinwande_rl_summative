@@ -5,5 +5,7 @@ pygame>=2.5.0
 imageio>=2.31.0
 tqdm>=4.66.0
 numpy>=1.24.0
+tensorboard<2.16
+protobuf<4
 
 

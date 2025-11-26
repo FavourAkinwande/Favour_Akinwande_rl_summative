@@ -37,13 +37,17 @@ def record_random_policy(steps: int = 60, output_path: str = "videos/random_agen
         
         action = env.action_space.sample()
         obs, _, terminated, truncated, _ = env.step(action)
-        frame = env.render()
+        frame = env.render(mode="rgb_array")
         
         if frame is not None:
             frames.append(frame)
             # Display the frame in the pygame window
-            # Convert numpy array to pygame surface
-            frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
+            # Convert numpy array to pygame surface (ModernGL returns H, W, 3)
+            h, w, _ = frame.shape
+            frame_surface = pygame.image.frombuffer(frame.tobytes(), (w, h), "RGB")
+            # Scale to window size if needed
+            if (w, h) != env.window_size:
+                frame_surface = pygame.transform.smoothscale(frame_surface, env.window_size)
             window.blit(frame_surface, (0, 0))
             pygame.display.flip()
             clock.tick(env.metadata["render_fps"])
