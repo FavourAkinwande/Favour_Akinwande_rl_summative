@@ -12,9 +12,35 @@ This project implements and compares four reinforcement learning algorithms:
 
 The environment features a discrete action space (9 routes: 3 retailers × 3 communities), complex reward signals, and dynamic supply/demand dynamics.
 
+## Environment Details
+
+### Observation Space
+- **10 normalized features**: `[time, supplies(3), freshness(3), demands(3)]`
+- Time: normalized step (0-1) within the 24-step day
+- Supplies/Demands: normalized by max values
+- Freshness: decay factor (0-1)
+
+### Action Space
+- **9 discrete actions**: Each represents a route from retailer (R1-R3) to community (C1-C3)
+- Action encoding: `action = retailer_idx * num_communities + community_idx`
+
+### Reward Function
+
+**Positive Components:**
+- **Delivery Reward**: `deliverable / truck_capacity` (up to +1.0)
+- **Freshness Bonus**: `delivery_reward * freshness * 0.5` (up to +0.5)
+
+**Penalties:**
+- **Waste Penalty**: `0.02 * (remaining_supply / max_supply)`
+- **Fairness Penalty**: `0.2 * std(delivered_ratios)` - encourages equitable distribution
+- **Transport Penalty**: `0.1 * (distance / max_distance)` - discourages long routes
+- **Idle Penalty**: `0.1` if no delivery occurs
+
+**Final Reward**: `delivery_reward + freshness_reward - waste_penalty - fairness_penalty - transport_penalty - idle_penalty`
+
 ## Training
 
-### Hyperparameter Sweeps (All Algorithms)
+### Stage 1: Hyperparameter Sweeps (All Algorithms)
 
 Train all four algorithms with 10 hyperparameter combinations each:
 
@@ -22,7 +48,7 @@ Train all four algorithms with 10 hyperparameter combinations each:
 python -m training_scripts.train_all_agents --logs-dir logs --models-dir trained_models
 ```
 
-**Training Budget:**
+**Initial Training Budget:**
 - **SB3 algorithms (DQN, PPO, A2C)**: 50,000 timesteps per run
 - **REINFORCE**: 2,000 episodes per run
 
@@ -31,15 +57,36 @@ python -m training_scripts.train_all_agents --logs-dir logs --models-dir trained
 - Training logs (CSV, JSON) saved to `logs/`
 - Best models identified in `logs/all_algorithms_summary.json`
 
-### Extended PPO Training
+### Stage 2: Extended Training (Best Models)
 
-Train the best PPO configuration for 500,000 timesteps:
+After identifying the best hyperparameter configurations from Stage 1, the best models are trained for an additional 500,000 timesteps:
 
 ```bash
 python -m training_scripts.train_best_ppo
 ```
 
-Saves the model to `trained_models/best models/overallbest_ppo.zip`
+**Extended Training Budget:**
+- **Best PPO model**: 500,000 timesteps (total: 550,000 timesteps)
+
+Saves the final model to `trained_models/best models/overallbest_ppo.zip`
+
+## Results Summary
+
+Based on comprehensive evaluation:
+
+| Algorithm | Mean Reward | Std Reward | Success Rate | Best Model |
+|-----------|-------------|------------|--------------|------------|
+| **PPO** | 2.24 | 0.73 | 100% | `overallbest_ppo.zip` |
+| **A2C** | 2.30 | 0.74 | 100% | `a2c_run01.zip` |
+| **REINFORCE** | 0.59 | 1.11 | 70% | `reinforce_run07_policy.pt` |
+| **DQN** | -2.63 | 0.38 | 0% | `dqn_run04.zip` |
+
+**Key Findings:**
+- **PPO** achieved the highest mean reward (2.09) during 50k timestep training sweeps
+- **PPO** was selected for extended training (500k timesteps) due to superior performance
+- **A2C** showed competitive results but with 10× less training
+- **DQN** struggled, likely requiring more extensive hyperparameter tuning or longer training
+- **REINFORCE** served as an effective baseline, demonstrating the value of variance reduction techniques
 
 ## Evaluation
 
@@ -78,74 +125,6 @@ python -m model_evaluation.performance_plots
 - `reinforce_entropy.png` - REINFORCE policy entropy over episodes
 - `convergence_analysis.png` - Episodes to converge for all algorithms
 
-## Visualization
-
-### Interactive Dashboard
-
-Run the best PPO model with the interactive dashboard:
-
-```bash
-python -m training_scripts.play_best_model_dashboard
-```
-
-**Features:**
-- ModernGL 3D scene with retailers, communities, and animated truck
-- Real-time episode statistics (supply, demand, rewards, metrics)
-- Camera controls (scroll to zoom, drag to rotate)
-- Episode HUD showing initial supply and total delivered
-
-### Generate Random Agent Video
-
-Record a video of a random agent:
-
-```bash
-python -m training_scripts.random_video --steps 60 --output videos/random_agent.mp4
-```
-
-## Results Summary
-
-Based on comprehensive evaluation:
-
-| Algorithm | Mean Reward | Std Reward | Success Rate | Best Model |
-|-----------|-------------|------------|--------------|------------|
-| **PPO** | 2.24 | 0.73 | 100% | `overallbest_ppo.zip` |
-| **A2C** | 2.30 | 0.74 | 100% | `a2c_run01.zip` |
-| **REINFORCE** | 0.59 | 1.11 | 70% | `reinforce_run07_policy.pt` |
-| **DQN** | -2.63 | 0.38 | 0% | `dqn_run04.zip` |
-
-**Key Findings:**
-- **PPO** achieved the highest mean reward (2.09) during 50k timestep training sweeps
-- **PPO** was selected for extended training (500k timesteps) due to superior performance
-- **A2C** showed competitive results but with 10× less training
-- **DQN** struggled, likely requiring more extensive hyperparameter tuning or longer training
-- **REINFORCE** served as an effective baseline, demonstrating the value of variance reduction techniques
-
-## Environment Details
-
-### Observation Space
-- **10 normalized features**: `[time, supplies(3), freshness(3), demands(3)]`
-- Time: normalized step (0-1) within the 24-step day
-- Supplies/Demands: normalized by max values
-- Freshness: decay factor (0-1)
-
-### Action Space
-- **9 discrete actions**: Each represents a route from retailer (R1-R3) to community (C1-C3)
-- Action encoding: `action = retailer_idx * num_communities + community_idx`
-
-### Reward Function
-
-**Positive Components:**
-- **Delivery Reward**: `deliverable / truck_capacity` (up to +1.0)
-- **Freshness Bonus**: `delivery_reward * freshness * 0.5` (up to +0.5)
-
-**Penalties:**
-- **Waste Penalty**: `0.02 * (remaining_supply / max_supply)`
-- **Fairness Penalty**: `0.2 * std(delivered_ratios)` - encourages equitable distribution
-- **Transport Penalty**: `0.1 * (distance / max_distance)` - discourages long routes
-- **Idle Penalty**: `0.1` if no delivery occurs
-
-**Final Reward**: `delivery_reward + freshness_reward - waste_penalty - fairness_penalty - transport_penalty - idle_penalty`
-
 ## Technical Details
 
 ### Algorithms Implemented
@@ -175,6 +154,32 @@ Based on comprehensive evaluation:
 - **Pygame**: UI shell, dashboard, and controls
 - **ModernGL (OpenGL)**: 3D scene rendering with retailers, communities, truck, and routes
 - **Pillow**: Text overlay and labels on rendered frames
+
+## Visualization
+
+### Interactive Dashboard
+
+Run the best PPO model with the interactive dashboard:
+
+```bash
+python -m training_scripts.play_best_model_dashboard
+```
+
+**Features:**
+- ModernGL 3D scene with retailers, communities, and animated truck. The scene provides a clear visual representation of the food redistribution network, with retailers displayed as rectangular boxes on the left and communities as cylindrical shapes on the right.
+- Real-time episode statistics (supply, demand, rewards, metrics). The dashboard sidebar continuously updates to show current state information, allowing users to monitor the agent's performance and decision-making process in real-time.
+- Camera controls (scroll to zoom, drag to rotate). Users can interact with the 3D scene to get different perspectives on the simulation, making it easier to understand the spatial relationships between nodes and delivery routes.
+- Episode HUD showing initial supply and total delivered. A semi-transparent overlay in the top-left corner displays key episode metrics, providing quick access to important information without cluttering the main visualization.
+
+### Generate Random Agent Video
+
+Record a video of a random agent:
+
+```bash
+python -m training_scripts.random_video --steps 60 --output videos/random_agent.mp4
+```
+
+This script generates a video recording of a random policy interacting with the environment, useful for demonstrating the environment dynamics and baseline behavior before training. The video captures the ModernGL-rendered scene, showing how an untrained agent navigates the food redistribution problem.
 
 ## Notes
 
